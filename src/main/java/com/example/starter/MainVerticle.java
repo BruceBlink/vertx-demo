@@ -22,6 +22,10 @@ public class MainVerticle extends AbstractVerticle {
 
         // Define a handler for the /goodbye path
         router.route("/goodbye").handler(this::handleGoodbye);
+
+        //test GET request
+        router.get("/name").handler(this::testGet);
+
         // Create the HTTP server
         vertx.createHttpServer()
             // Handle every request using the routerrequestHandler(router)
@@ -60,5 +64,23 @@ public class MainVerticle extends AbstractVerticle {
             new JsonObject()
                 .put("message", "Goodbye!")
         );
+    }
+
+
+    private void testGet(RoutingContext context) {
+        MultiMap queryParams = context.queryParams();
+        String name = queryParams.contains("name") ? queryParams.get("name") : "unknown";
+        if (name.equals("likanug")) {
+            context.json(
+                new JsonObject()
+                    .put("name", name)
+                    .put("message", "Hello " + name)
+            );
+        } else {
+            context.json(
+                new JsonObject()
+                    .put("message", name + " not found")
+            );
+        }
     }
 }
