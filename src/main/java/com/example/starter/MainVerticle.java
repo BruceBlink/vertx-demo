@@ -22,10 +22,10 @@ public class MainVerticle extends AbstractVerticle {
 
         // Define a handler for the /goodbye path
         router.route("/goodbye").handler(this::handleGoodbye);
-
         // Create the HTTP server
         vertx.createHttpServer()
             // Handle every request using the routerrequestHandler(router)
+            .requestHandler(router)
             // Start listening
             .listen(8888)
             // Print the port on success
