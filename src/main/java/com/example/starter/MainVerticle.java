@@ -5,33 +5,27 @@ import io.vertx.core.MultiMap;
 import io.vertx.core.Promise;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 
 public class MainVerticle extends AbstractVerticle {
 
     @Override
-    public void start(Promise<Void> startPromise) throws Exception {
+    public void start(Promise<Void> startPromise) {
         // Create a Router
         Router router = Router.router(vertx);
 
-        // Mount the handler for all incoming requests at every path and HTTP method
-        router.route().handler(context -> {
-            // Get the address of the request
-            String address = context.request().connection().remoteAddress().toString();
-            // Get the query parameter "name"
-            MultiMap queryParams = context.queryParams();
-            String name = queryParams.contains("name") ? queryParams.get("name") : "unknown";
-            // Write a json response
-            context.json(
-                new JsonObject()
-                    .put("name", name)
-                    .put("address", address)
-                    .put("message", "Hello " + name + " connected from " + address)
-            );
-        });
+        // Define a handler for the root path
+        router.route("/").handler(this::handleRoot);
+
+        // Define a handler for the /hello path
+        router.route("/hello").handler(this::handleHello);
+
+        // Define a handler for the /goodbye path
+        router.route("/goodbye").handler(this::handleGoodbye);
+
         // Create the HTTP server
         vertx.createHttpServer()
-            // Handle every request using the router
-            .requestHandler(router)
+            // Handle every request using the routerrequestHandler(router)
             // Start listening
             .listen(8888)
             // Print the port on success
@@ -44,5 +38,27 @@ public class MainVerticle extends AbstractVerticle {
                 throwable.printStackTrace();
                 startPromise.fail(throwable);
             });
+    }
+
+    private void handleRoot(RoutingContext context) {
+        context.response()
+            .putHeader("content-type", "text/plain")
+            .end("Welcome to the API!");
+    }
+
+    private void handleHello(RoutingContext context) {
+        MultiMap queryParams = context.queryParams();
+        String name = queryParams.contains("name") ? queryParams.get("name") : "unknown";
+        context.json(
+            new JsonObject()
+                .put("message", "Hello " + name)
+        );
+    }
+
+    private void handleGoodbye(RoutingContext context) {
+        context.json(
+            new JsonObject()
+                .put("message", "Goodbye!")
+        );
     }
 }
