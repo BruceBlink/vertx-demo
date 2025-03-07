@@ -63,7 +63,6 @@ public class MainVerticle extends AbstractVerticle {
             })
             // Print the problem on failure
             .onFailure(throwable -> {
-                throwable.printStackTrace();
                 logger.info("HTTP server start failure: {}", throwable.getMessage());
                 startPromise.fail(throwable);
             });
