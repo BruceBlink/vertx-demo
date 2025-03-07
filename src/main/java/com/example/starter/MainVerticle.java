@@ -8,8 +8,12 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class MainVerticle extends AbstractVerticle {
 
+    private final Logger logger = LoggerFactory.getLogger(MainVerticle.class);
     static JsonArray userJsonArray = new JsonArray();
 
     static {
@@ -54,12 +58,13 @@ public class MainVerticle extends AbstractVerticle {
             .listen(8888)
             // Print the port on success
             .onSuccess(server -> {
-                System.out.println("HTTP server started on port " + server.actualPort());
+                logger.info("HTTP server started on port: {}", server.actualPort());
                 startPromise.complete();
             })
             // Print the problem on failure
             .onFailure(throwable -> {
                 throwable.printStackTrace();
+                logger.info("HTTP server start failure: {}", throwable.getMessage());
                 startPromise.fail(throwable);
             });
     }
