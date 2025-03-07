@@ -12,7 +12,9 @@ public class HelloVerticle extends AbstractVerticle {
 
     @Override
     public void start() {
+        // 创建一个定时作业
         vertx.setPeriodic(5000, id -> logger.info("tick"));
+        // 创建一个http服务器
         vertx.createHttpServer()
             .requestHandler(req -> {
                 logger.info("Request #{} from {}", counter++, req.remoteAddress().host());
